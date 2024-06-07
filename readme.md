@@ -81,4 +81,7 @@ Since these are value distinct states, TLA will attempt to evaluate all of them.
 
 To fix this issue, I:
 1. Set a maximum queue length of three.
-2. Allowed senders to see if their messages were recieved (i.e. the recipient's state changed). This emulates acknowledgement messages..
+2. Allowed senders to see if their messages were recieved (i.e. the recipient's state changed). This emulates acknowledgement messages.
+
+#### A note:
+Run this with -deadlock -- if all managers abort, no transitions save stuttering steps will remain!
