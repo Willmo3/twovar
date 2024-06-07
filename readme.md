@@ -54,4 +54,31 @@ If a resource manager aborts, it will not broadcast a "prepared" message, and so
 * variations:
 	* This contains the versions of the protocol with modified environments.
 * mc_variations:
-	* Some models are infinite state and so can't be checked by TLC in finite time. This directory contains the finite-state versions of those models..
+	* Some models are infinite state and so can't be checked by TLC in finite time. This directory contains the finite-state versions of those models.
+
+## Variations
+
+### Message Queue
+
+#### Files:
+* mc_variations/MCTwoPhaseQueue.tla
+* variations/TwoPhaseQueue.tla
+
+#### Description:
+
+The base model uses a set as the messages data structure. Since elements are not removed from the set, this is comparable to broadcasting every message. 
+
+Acknowledging the classic networking message queue, we rebuilt messages to use a queue instead of a set. Now all communication is point-to-point!
+
+Items are then removed from the queue as they're received. To enable this, we modified messages to include a specific destination and changed the system entities to dequeue messages addressed to them.
+
+Note as well that since the commit message is no longer broadcasted, it must be sent to each entity. However, because of the nature of the original system's design and TLA+, we got this change more or less for free. Once the transaction manager enters the commit state, it will maintain transitions to the SndCommit message for each resource manager.
+
+##### MC Finite state:
+In the message queue model, messages can be infinitely enqueued without ever being received. For instance, the transaction manager can continuously send commit messages without giving their targets a chance to read them!
+
+Since these are value distinct states, TLA will attempt to evaluate all of them.
+
+To fix this issue, I:
+1. Set a maximum queue length of three.
+2. Allowed senders to see if their messages were recieved (i.e. the recipient's state changed). This emulates acknowledgement messages..
