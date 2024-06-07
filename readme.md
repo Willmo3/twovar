@@ -114,3 +114,23 @@ As soon as the transaction manager receives a prepared message, it assumes that 
 This variation maintains no data structure for the messages at all! 
 
 The system as designed reads from the message set as an enabling condition for all receive message states. So removing this data structure also removes these enabling conditions, breaking the system.
+
+### Live Queue
+
+#### Files:
+- variations/TwoPhaseQueueLive.tla
+- variations/TwoPhaseLive.cfg
+- mc_variations/MCTwoPhaseQueueLive.tla
+- mc_variations/TwoPhaseLive.cfg
+
+#### Description:
+In this variation, as opposed to the *consistent* safety property used in the other models, an additional *liveness* property is added stating that, eventually, all resource managers will either be committed or aborted.
+
+By default, TLC makes no fairness guarantees. A model can easily take infinite stuttering steps (perhaps emulating a crash), so this condition fails.
+
+To remedy this, we declare weak fairness of the next state. This states that if next is continuously accessible, it must eventually be entered. In effect, we guarantee system progress.
+
+If the system is guaranteed to progress, then it will eventually reach this consensus state!
+
+#### Note:
+Be sure to run this model with TwoPhaseLive.cfg or the liveness property will not be checked.
