@@ -8,7 +8,7 @@ This repository is tests the notion of software robustness. While formally defin
 
 A system's *environment* is all of the external factors that influence it -- for instance, human users, or unreliable networks. A good system should be able to tolerate some deviations from expected behavior -- for instance, a user accidentally pressing the wrong button -- while still working.
 
-So we evaluate robustness by seeing what
+So we evaluate robustness by finding all the variations a system can tolerate!
 
 ### Twophase Commit
 In our case, we consider the twophase commit protocol for atomic commitment. 
