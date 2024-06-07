@@ -104,3 +104,13 @@ Getting the message removed variant to work required adding destination metadata
 This variation allows erroneous "prepared" messages to be sent to the transaction manager.
 
 As soon as the transaction manager receives a prepared message, it assumes that the transaction manager is permanently prepared. Therefore, erroneous messages break the system!
+
+### No Messages
+
+#### Files:
+- variations/TwoPhaseNoMsg.tla
+
+#### Description:
+This variation maintains no data structure for the messages at all! 
+
+The system as designed reads from the message set as an enabling condition for all receive message states. So removing this data structure also removes these enabling conditions, breaking the system.
