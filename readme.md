@@ -46,4 +46,12 @@ Here is an example of an allowed behavior in the normative environment E:
 5. The transaction manager sets its state to committed.
 6. Each resource manager reads the commit message and sets its own state to committed. 
 
-If a resource manager aborts, it will not broadcast a "prepared" message, and so the transaction manager will not commit.
+If a resource manager aborts, it will not broadcast a "prepared" message, and so the transaction manager will not commit
+
+## Project Structure
+* base:
+	* This contains the base configuration and twophase model.
+* variations:
+	* This contains the versions of the protocol with modified environments.
+* mc_variations:
+	* Some models are infinite state and so can't be checked by TLC in finite time. This directory contains the finite-state versions of those models..
