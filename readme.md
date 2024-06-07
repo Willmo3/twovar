@@ -24,7 +24,26 @@ So the network is our environment. What sort of variations might a network have?
 
 What if it's an unreliable network that drops packets?
 
-What if a malicious actor sends erroneous messages to the various entities?
+What if a malicious actor sends erroneous messages to the system?
 
-These are the sort of environmental variations we seek to answer!
+These are the kind of environmental variations we seek to evaluate!
 
+## The Model
+
+Our model decomposes to three entities, as described above
+1. The transaction manager
+2. The resource managers
+3. The network environment.
+
+The base model is defined in TwoPhase.tla and is derived from https://github.com/cmu-soda/recomp-verify.
+
+Here is an example of an allowed behavior in the normative environment E:
+
+1. The system starts out with the transaction manager in the *init* state and all resource managers in the *working* state. The set of messages sent is the empty set.
+2. Each resource manager broadcasts a "prepared" message and sets its own state to "prepared".
+3. Reading from the message set, the transaction manager adds each resource manager to its internal set of prepared resource managers.
+4. Noticing that all resource managers are prepared, the transaction manager broadcasts a commit message.
+5. The transaction manager sets its state to committed.
+6. Each resource manager reads the commit message and sets its own state to committed. 
+
+If a resource manager aborts, it will not broadcast a "prepared" message, and so the transaction manager will not commit.
