@@ -85,3 +85,13 @@ To fix this issue, I:
 
 #### A note:
 Run this with -deadlock -- if all managers abort, no transitions save stuttering steps will remain!
+
+### Malicious messages
+
+#### Files:
+- variations/TwoPhaseMalicious.tla
+
+#### Description:
+This variation allows erroneous "prepared" messages to be sent to the transaction manager.
+
+As soon as the transaction manager receives a prepared message, it assumes that the transaction manager is permanently prepared. Therefore, erroneous messages break the system!
