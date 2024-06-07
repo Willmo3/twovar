@@ -6,7 +6,7 @@ VARIABLES msgs, rmState, tmState, tmPrepared
 
 vars == <<msgs, rmState, tmState, tmPrepared>>
 
-RMs == {"rm1", "rm2", "rm3", "rm4", "rm5", "rm6", "rm7", "rm8", "rm9"}
+RMs == {"rm1", "rm2", "rm3"} 
 
 Message ==
   [type : {"Prepared"}, theRM : RMs]  \cup  [type : {"Commit", "Abort"}]
