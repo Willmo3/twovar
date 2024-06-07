@@ -86,7 +86,16 @@ To fix this issue, I:
 #### A note:
 Run this with -deadlock -- if all managers abort, no transitions save stuttering steps will remain!
 
-### Malicious messages
+### Message Removed From Set
+#### Files:
+- variations/TwoPhaseMsgRemoved.tla
+
+#### Description
+In this variation, messages are removed from the set of all messages as they're read. Like with the message queue, this emulates point to point communication, but unlike with the message queue, this imposes no additional ordering requirements. 
+
+Getting the message removed variant to work required adding destination metadata, as in the message queue.
+
+### Malicious Messages
 
 #### Files:
 - variations/TwoPhaseMalicious.tla
