@@ -115,7 +115,7 @@ AllAborted == \A rm \in RMs: (rmState[rm] = "aborted")
 AllCommited == \A rm \in RMs: (rmState[rm] = "committed")
 
 \* AllAborted or AllCommitted
-Liveness == <>(\/ AllAborted \/ AllCommited) 
+Liveness == <>(AllAborted \/ AllCommited) 
 
 \* This property is not consistently satisfied.
 Committed == <>(\A rm \in RMs: rmState[rm] = "committed")
