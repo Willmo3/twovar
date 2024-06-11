@@ -7,7 +7,7 @@ vars == <<msgs>>
 
 RMs == {"rm1","rm2","rm3"}
 
-Message == ([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit","Abort"}])
+Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 
 Init ==
 /\ msgs = {}
@@ -23,17 +23,17 @@ RcvPrepare(rm) ==
 /\ UNCHANGED <<msgs>>
 
 SndCommit(rm) ==
-/\ msgs' = (msgs \cup {[type |-> "Commit"]})
+/\ msgs' = (msgs \cup {[type |-> "Commit",theRM |-> rm]})
 
 RcvCommit(rm) ==
-/\ ([type |-> "Commit"] \in msgs)
+/\ ([type |-> "Commit",theRM |-> rm] \in msgs)
 /\ UNCHANGED <<msgs>>
 
 SndAbort(rm) ==
-/\ msgs' = (msgs \cup {[type |-> "Abort"]})
+/\ msgs' = (msgs \cup {[type |-> "Abort",theRM |-> rm]})
 
 RcvAbort(rm) ==
-/\ ([type |-> "Abort"] \in msgs)
+/\ ([type |-> "Abort",theRM |-> rm] \in msgs)
 /\ UNCHANGED <<msgs>>
 
 Next ==
