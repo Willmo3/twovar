@@ -2,7 +2,6 @@
 
 EXTENDS Sequences, Naturals, Integers
 
-\* TMAborted: transaction manager specifies whether has aborted.
 VARIABLES msgs, rmState, tmState, tmPrepared
 
 vars == <<msgs, rmState, tmState, tmPrepared>>
@@ -40,16 +39,11 @@ RcvPrepare(rm) ==
   /\ Dequeue
   /\ UNCHANGED <<tmState, rmState>>
   
-\* ASSUMPTION: the TM knows when its commit message is recieved.
-\* If this assumption does not hold, commit messages can be spammed.
-
 \* If messages are enqueued / dequeued,
 \* Then must send a commit message to each RM.
 SndCommit(rm) ==
   /\ tmState \in {"init", "committed"}
   /\ tmPrepared = RMs  
-  \* ASSUMPTION: messages acknowledging receipt are recieved. (implicitly)
-  /\ rmState[rm] /= "committed"
   /\ msgs' = Append(msgs, [type |-> "Commit", theRM |-> rm])
   /\ tmState' = "committed"
   /\ UNCHANGED <<tmPrepared, rmState>>
@@ -61,12 +55,8 @@ RcvCommit(rm) ==
   /\ Dequeue
   /\ UNCHANGED <<tmState, tmPrepared>>
 
-\* ASSUMPTION: The TM knows when an abort message is recieved.
-\* If this assumption does not hold, then the TM can send unlimited abort messages before they're read.
 SndAbort(rm) ==
   /\ tmState \in {"init", "aborted"}
-  \* ASSUMPTION: implicit acknowledgement message
-  /\ rmState[rm] /= "aborted"
   /\ tmState' = "aborted"
   /\ msgs' = Append(msgs, [type |-> "Abort", theRM |-> rm])
   /\ UNCHANGED <<tmPrepared, rmState>>
