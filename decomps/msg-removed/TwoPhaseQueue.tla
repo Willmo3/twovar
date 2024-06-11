@@ -7,7 +7,7 @@ VARIABLES msgs, rmState, tmState, tmPrepared
 
 vars == <<msgs, rmState, tmState, tmPrepared>>
 
-RMs == {"rm1", "rm2"}
+RMs == {"rm1", "rm2", "rm3"}
 
 Message ==
   [type : {"Prepared"}, theRM : RMs]  
@@ -45,7 +45,6 @@ RcvPrepare(rm) ==
 SndCommit(rm) ==
   /\ tmState \in {"init", "committed"}
   /\ tmPrepared = RMs
-  /\ rmState[rm] /= "committed"
   /\ msgs' = Append(msgs, [type |-> "Commit", theRM |-> rm])
   /\ tmState' = "committed"
   /\ UNCHANGED <<tmPrepared, rmState>>
@@ -59,7 +58,6 @@ RcvCommit(rm) ==
 
 SndAbort(rm) ==
   /\ tmState \in {"init", "aborted"}
-  /\ rmState[rm] /= "aborted"
   /\ tmState' = "aborted"
   /\ msgs' = Append(msgs, [type |-> "Abort", theRM |-> rm])
   /\ UNCHANGED <<tmPrepared, rmState>>
