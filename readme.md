@@ -55,6 +55,9 @@ If a resource manager aborts, it will not broadcast a "prepared" message, and so
 	* This contains the versions of the protocol with modified environments.
 * mc_variations:
 	* Some models are infinite state and so can't be checked by TLC in finite time. This directory contains the finite-state versions of those models.
+* decomps:
+    * Using CMU SoDA's recomp-verify (https://github.com/cmu-soda/recomp-verify), these variations have been decomposed. Special effort has been put in to making these decompositions as similar to each other as possible, including adding in some redundant checks, so that diffs will be easily viewed.
+    * Note: since decompositions are manually copied (TODO: make script doing this!), there is a possibility that some are out of date. 
 
 ## Variations
 
