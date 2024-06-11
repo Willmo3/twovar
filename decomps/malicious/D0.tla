@@ -16,8 +16,16 @@ SndPrepare(rm) ==
 /\ rmState[rm] = "working"
 /\ rmState' = [rmState EXCEPT![rm] = "prepared"]
 
+SndCommit(rm) ==
+/\ rmState[rm] /= "committed"
+/\ UNCHANGED <<rmState>>
+
 RcvCommit(rm) ==
 /\ rmState' = [rmState EXCEPT![rm] = "committed"]
+
+SndAbort(rm) ==
+/\ rmState[rm] /= "aborted"
+/\ UNCHANGED <<rmState>>
 
 RcvAbort(rm) ==
 /\ rmState' = [rmState EXCEPT![rm] = "aborted"]
@@ -29,7 +37,9 @@ SilentAbort(rm) ==
 Next ==
 \E rm \in RMs :
 \/ SndPrepare(rm)
+\/ SndCommit(rm)
 \/ RcvCommit(rm)
+\/ SndAbort(rm)
 \/ RcvAbort(rm)
 \/ SilentAbort(rm)
 

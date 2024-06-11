@@ -41,10 +41,12 @@ RcvPrepare(rm) ==
   /\ tmPrepared' = tmPrepared \cup {rm}
   /\ UNCHANGED <<msgs, tmState, rmState>>
 
+\* Adding extra prereq that rmState is not committed to be consistent with queue impl.
 SndCommit(rm) ==
-  /\ msgs' = msgs \cup {[type |-> "Commit", theRM |-> rm]}
   /\ tmState \in {"init", "commmitted"}
   /\ tmPrepared = RMs
+  /\ rmState[rm] /= "committed"
+  /\ msgs' = msgs \cup {[type |-> "Commit", theRM |-> rm]}
   /\ tmState' = "committed"
   /\ UNCHANGED <<tmPrepared, rmState>>
 
@@ -53,9 +55,12 @@ RcvCommit(rm) ==
   /\ rmState' = [rmState EXCEPT![rm] = "committed"]
   /\ UNCHANGED <<msgs, tmState, tmPrepared>>
 
+\* Adding extra prereq that rmState is not aborted when abort message sent
+\* To be consistent with queue impl.
 SndAbort(rm) ==
-  /\ msgs' = msgs \cup {[type |-> "Abort", theRM |-> rm]}
   /\ tmState \in {"init", "aborted"}
+  /\ rmState[rm] /= "aborted"
+  /\ msgs' = msgs \cup {[type |-> "Abort", theRM |-> rm]}
   /\ tmState' = "aborted"
   /\ UNCHANGED <<tmPrepared, rmState>>
 
@@ -99,11 +104,11 @@ ErrNext ==
     /\ Next
     /\ errCounter' = errCounter + 1
     /\ (errCounter = 0) => ErroneousPrepared("rm1")
-    /\ (errCounter = 1) => RcvPrepare("rm1")
-    /\ (errCounter = 2) => ErroneousPrepared("rm3")
-    /\ (errCounter = 3) => RcvPrepare("rm3")
-    /\ (errCounter = 4) => SndPrepare("rm2")
-    /\ (errCounter = 5) => RcvPrepare("rm2")
+    /\ (errCounter = 1) => ErroneousPrepared("rm3")
+    /\ (errCounter = 2) => SndPrepare("rm2")
+    /\ (errCounter = 3) => RcvPrepare("rm1")
+    /\ (errCounter = 4) => RcvPrepare("rm2")
+    /\ (errCounter = 5) => RcvPrepare("rm3")
     /\ (errCounter = 6) => SndCommit("rm1")
     /\ (errCounter = 7) => RcvCommit("rm1")
     /\ (errCounter = 8) => SilentAbort("rm3")

@@ -1,31 +1,37 @@
---------------------------- MODULE D1 ---------------------------
+--------------------------- MODULE D2 ---------------------------
 EXTENDS Naturals, Sequences, Integers
 
-VARIABLES tmPrepared
+VARIABLES tmState
 
-vars == <<tmPrepared>>
+vars == <<tmState>>
 
 RMs == {"rm1","rm2","rm3"}
 
 Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 
 Init ==
-/\ tmPrepared = {}
+/\ tmState = "init"
 
 RcvPrepare(rm) ==
-/\ tmPrepared' = (tmPrepared \cup {rm})
+/\ tmState = "init"
+/\ UNCHANGED <<tmState>>
 
 SndCommit(rm) ==
-/\ tmPrepared = RMs
-/\ UNCHANGED <<tmPrepared>>
+/\ (tmState \in {"init","commmitted"})
+/\ tmState' = "committed"
+
+SndAbort(rm) ==
+/\ (tmState \in {"init","aborted"})
+/\ tmState' = "aborted"
 
 Next ==
 \E rm \in RMs :
 \/ RcvPrepare(rm)
 \/ SndCommit(rm)
+\/ SndAbort(rm)
 
 Spec == (Init /\ [][Next]_vars)
 
 TypeOK ==
-/\ (tmPrepared \in SUBSET(RMs))
+/\ (tmState \in {"init","committed","aborted"})
 =============================================================================
