@@ -5,7 +5,7 @@ VARIABLES msgs
 
 vars == <<msgs>>
 
-RMs == {"rm1","rm2"}
+RMs == {"rm1","rm2","rm3"}
 
 Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 
