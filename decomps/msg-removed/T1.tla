@@ -38,8 +38,8 @@ RcvCommit(rm) ==
 /\ UNCHANGED <<tmState,tmPrepared>>
 
 SndAbort(rm) ==
-/\ msgs' = (msgs \cup {[type |-> "Abort",theRM |-> rm]})
 /\ (tmState \in {"init","aborted"})
+/\ msgs' = (msgs \cup {[type |-> "Abort",theRM |-> rm]})
 /\ tmState' = "aborted"
 /\ UNCHANGED <<tmPrepared>>
 

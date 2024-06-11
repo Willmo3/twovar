@@ -1,4 +1,4 @@
-------------------------------- MODULE TwoPhaseMalicious ----------------------------- 
+---- MODULE ErrTrace ----
 
 \* This TwoPhase includes a malicious entity that sabotages the environment by sending bad messages. 
 
@@ -96,4 +96,22 @@ TypeOK ==
 
 Consistent == \A rm1,rm2 \in RMs : ~(rmState[rm1] = "aborted" /\ rmState[rm2] = "committed")
 
+VARIABLE errCounter
+ErrInit ==
+    /\ Init
+    /\ errCounter = 0
+ErrNext ==
+    /\ Next
+    /\ errCounter' = errCounter + 1
+    /\ (errCounter = 0) => ErroneousPrepared("rm1")
+    /\ (errCounter = 1) => ErroneousPrepared("rm3")
+    /\ (errCounter = 2) => SndPrepare("rm2")
+    /\ (errCounter = 3) => RcvPrepare("rm1")
+    /\ (errCounter = 4) => RcvPrepare("rm2")
+    /\ (errCounter = 5) => RcvPrepare("rm3")
+    /\ (errCounter = 6) => SndCommit("rm1")
+    /\ (errCounter = 7) => RcvCommit("rm1")
+    /\ (errCounter = 8) => SilentAbort("rm3")
+    /\ (errCounter = 9) => FALSE
+ErrSpec == ErrInit /\ [][ErrNext]_vars
 =============================================================================

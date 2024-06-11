@@ -34,9 +34,11 @@ RcvPrepare(rm) ==
   /\ tmPrepared' = tmPrepared \cup {rm}
   /\ UNCHANGED <<tmState, rmState>>
 
+\* Adding extra prereq that rmState is not committed to be consistent with queue impl.
 SndCommit(rm) ==
   /\ tmState \in {"init", "committed"}
   /\ tmPrepared = RMs
+  /\ rmState[rm] /= "committed"
   /\ tmState' = "committed"
   /\ msgs' = msgs \cup {[type |-> "Commit", theRM |-> rm]}
   /\ UNCHANGED <<tmPrepared, rmState>>
@@ -47,9 +49,12 @@ RcvCommit(rm) ==
   /\ msgs' = msgs \ {[type |-> "Commit", theRM |-> rm]}
   /\ UNCHANGED <<tmState, tmPrepared>>
 
+\* Adding extra prereq that rmState is not aborted when abort message sent
+\* To be consistent with queue impl.
 SndAbort(rm) ==
-  /\ msgs' = msgs \cup {[type |-> "Abort", theRM |-> rm]}
   /\ tmState \in {"init", "aborted"}
+  /\ rmState[rm] /= "aborted"
+  /\ msgs' = msgs \cup {[type |-> "Abort", theRM |-> rm]}
   /\ tmState' = "aborted"
   /\ UNCHANGED <<tmPrepared, rmState>>
 
