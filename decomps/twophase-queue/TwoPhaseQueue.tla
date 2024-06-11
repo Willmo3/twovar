@@ -1,4 +1,4 @@
-------------------------------- MODULE MCTwoPhaseQueue ----------------------------- 
+------------------------------- MODULE TwoPhaseQueue ----------------------------- 
 
 EXTENDS Sequences, Naturals, Integers
 
@@ -7,7 +7,7 @@ VARIABLES msgs, rmState, tmState, tmPrepared
 
 vars == <<msgs, rmState, tmState, tmPrepared>>
 
-RMs == {"rm1", "rm2", "rm3"}
+RMs == {"rm1", "rm2"}
 
 Message ==
   [type : {"Prepared"}, theRM : RMs]  
@@ -26,9 +26,6 @@ Dequeue ==
 
 \* Message passing
 SndPrepare(rm) == 
-  \* Don't saturate the queue!
-  /\ Len(msgs) < 3
-  \* Only send a prepare message if we're currently working.
   /\ rmState[rm] = "working"
   /\ msgs' = Append(msgs, [type |-> "Prepared", theRM |-> rm])
   /\ rmState' = [rmState EXCEPT![rm] = "prepared"]
@@ -43,16 +40,11 @@ RcvPrepare(rm) ==
   /\ Dequeue
   /\ UNCHANGED <<tmState, rmState>>
 
-\* ASSUMPTION: the TM knows when its commit message is recieved.
-\* If this assumption does not hold, commit messages can be spammed.
+\* If messages are enqueued / dequeued,
+\* Then must send a commit message to each RM.
 SndCommit(rm) ==
-  \* Don't saturate the queue
-  /\ Len(msgs) < 3
   /\ tmState \in {"init", "committed"}
-  \* Only commit if all units have indicated they're prepared
   /\ tmPrepared = RMs
-  \* ASSUMPTION: messages acknowledging receipt are recieved. (implicitly)
-  /\ rmState[rm] /= "committed"
   /\ msgs' = Append(msgs, [type |-> "Commit", theRM |-> rm])
   /\ tmState' = "committed"
   /\ UNCHANGED <<tmPrepared, rmState>>
@@ -64,14 +56,8 @@ RcvCommit(rm) ==
   /\ Dequeue
   /\ UNCHANGED <<tmState, tmPrepared>>
 
-\* ASSUMPTION: The TM knows when an abort message is recieved.
-\* If this assumption does not hold, then the TM can send unlimited abort messages before they're read.
 SndAbort(rm) ==
-  \* Don't saturate the queue.
-  /\ Len(msgs) < 3
   /\ tmState \in {"init", "aborted"}
-  \* ASSUMPTION: implicit acknowledgement message
-  /\ rmState[rm] /= "aborted"
   /\ tmState' = "aborted"
   /\ msgs' = Append(msgs, [type |-> "Abort", theRM |-> rm])
   /\ UNCHANGED <<tmPrepared, rmState>>
@@ -105,9 +91,8 @@ TypeOK ==
   /\ rmState \in [RMs -> {"working", "prepared", "committed", "aborted"}]
   /\ tmState \in {"init", "committed", "aborted"}
   /\ tmPrepared \in SUBSET RMs
-
+  
 Consistent == \A rm1,rm2 \in RMs : ~(rmState[rm1] = "aborted" /\ rmState[rm2] = "committed")
-
 
 
 =============================================================================

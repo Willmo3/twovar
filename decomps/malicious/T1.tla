@@ -29,7 +29,7 @@ RcvPrepare(rm) ==
 /\ UNCHANGED <<msgs,tmState>>
 
 SndCommit(rm) ==
-/\ (tmState \in {"init","commmitted"})
+/\ (tmState \in {"init","committed"})
 /\ tmPrepared = RMs
 /\ msgs' = (msgs \cup {[type |-> "Commit",theRM |-> rm]})
 /\ tmState' = "committed"

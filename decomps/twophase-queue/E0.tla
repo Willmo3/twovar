@@ -1,45 +1,56 @@
---------------------------- MODULE C2 ---------------------------
+--------------------------- MODULE E0 ---------------------------
 EXTENDS Naturals, Sequences, Integers
 
-VARIABLES msgs
+VARIABLES msgs, tmState, tmPrepared
 
-vars == <<msgs>>
+vars == <<msgs,tmState,tmPrepared>>
 
-RMs == {"rm1","rm2","rm3"}
+RMs == {"rm1","rm2"}
 
 Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 
 Init ==
 /\ msgs = <<>>
+/\ tmState = "init"
+/\ tmPrepared = {}
 
 Dequeue == msgs' = SubSeq(msgs,2,Len(msgs))
 
 SndPrepare(rm) ==
-/\ Len(msgs) < 3
 /\ msgs' = Append(msgs,[type |-> "Prepared",theRM |-> rm])
+/\ UNCHANGED <<tmState,tmPrepared>>
 
 RcvPrepare(rm) ==
 /\ Len(msgs) > 0
 /\ Head(msgs) = [type |-> "Prepared",theRM |-> rm]
+/\ tmPrepared' = (tmPrepared \cup {rm})
 /\ Dequeue
+/\ UNCHANGED <<tmState>>
 
 SndCommit(rm) ==
-/\ Len(msgs) < 3
+/\ (tmState \in {"init","committed"})
+/\ tmPrepared = RMs
 /\ msgs' = Append(msgs,[type |-> "Commit",theRM |-> rm])
+/\ tmState' = "committed"
+/\ UNCHANGED <<tmPrepared>>
 
 RcvCommit(rm) ==
 /\ Len(msgs) > 0
 /\ Head(msgs) = [type |-> "Commit",theRM |-> rm]
 /\ Dequeue
+/\ UNCHANGED <<tmState,tmPrepared>>
 
 SndAbort(rm) ==
-/\ Len(msgs) < 3
+/\ (tmState \in {"init","aborted"})
+/\ tmState' = "aborted"
 /\ msgs' = Append(msgs,[type |-> "Abort",theRM |-> rm])
+/\ UNCHANGED <<tmPrepared>>
 
 RcvAbort(rm) ==
 /\ Len(msgs) > 0
 /\ Head(msgs) = [type |-> "Abort",theRM |-> rm]
 /\ Dequeue
+/\ UNCHANGED <<tmState,tmPrepared>>
 
 Next ==
 \E rm \in RMs :
@@ -54,4 +65,6 @@ Spec == (Init /\ [][Next]_vars)
 
 TypeOK ==
 /\ (msgs \in SUBSET(Message))
+/\ (tmState \in {"init","committed","aborted"})
+/\ (tmPrepared \in SUBSET(RMs))
 =============================================================================

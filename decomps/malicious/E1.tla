@@ -1,62 +1,43 @@
 --------------------------- MODULE E1 ---------------------------
 EXTENDS Naturals, Sequences, Integers
 
-VARIABLES msgs, tmState
+VARIABLES tmState, tmPrepared
 
-vars == <<msgs,tmState>>
+vars == <<tmState,tmPrepared>>
 
 RMs == {"rm1","rm2","rm3"}
 
 Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 
 Init ==
-/\ msgs = {}
 /\ tmState = "init"
-
-ErroneousPrepared(rm) ==
-/\ msgs' = (msgs \cup {[type |-> "Prepared",theRM |-> rm]})
-/\ UNCHANGED <<tmState>>
-
-SndPrepare(rm) ==
-/\ msgs' = (msgs \cup {[type |-> "Prepared",theRM |-> rm]})
-/\ UNCHANGED <<tmState>>
+/\ tmPrepared = {}
 
 RcvPrepare(rm) ==
-/\ ([type |-> "Prepared",theRM |-> rm] \in msgs)
 /\ tmState = "init"
-/\ UNCHANGED <<msgs,tmState>>
+/\ tmPrepared' = (tmPrepared \cup {rm})
+/\ UNCHANGED <<tmState>>
 
 SndCommit(rm) ==
-/\ (tmState \in {"init","commmitted"})
-/\ msgs' = (msgs \cup {[type |-> "Commit",theRM |-> rm]})
+/\ (tmState \in {"init","committed"})
+/\ tmPrepared = RMs
 /\ tmState' = "committed"
-
-RcvCommit(rm) ==
-/\ ([type |-> "Commit",theRM |-> rm] \in msgs)
-/\ UNCHANGED <<msgs,tmState>>
+/\ UNCHANGED <<tmPrepared>>
 
 SndAbort(rm) ==
 /\ (tmState \in {"init","aborted"})
-/\ msgs' = (msgs \cup {[type |-> "Abort",theRM |-> rm]})
 /\ tmState' = "aborted"
-
-RcvAbort(rm) ==
-/\ ([type |-> "Abort",theRM |-> rm] \in msgs)
-/\ UNCHANGED <<msgs,tmState>>
+/\ UNCHANGED <<tmPrepared>>
 
 Next ==
 \E rm \in RMs :
-\/ SndPrepare(rm)
 \/ RcvPrepare(rm)
 \/ SndCommit(rm)
-\/ RcvCommit(rm)
 \/ SndAbort(rm)
-\/ RcvAbort(rm)
-\/ ErroneousPrepared(rm)
 
 Spec == (Init /\ [][Next]_vars)
 
 TypeOK ==
-/\ (msgs \in SUBSET(Message))
 /\ (tmState \in {"init","committed","aborted"})
+/\ (tmPrepared \in SUBSET(RMs))
 =============================================================================

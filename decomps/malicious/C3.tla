@@ -17,7 +17,7 @@ RcvPrepare(rm) ==
 /\ UNCHANGED <<tmState>>
 
 SndCommit(rm) ==
-/\ (tmState \in {"init","commmitted"})
+/\ (tmState \in {"init","committed"})
 /\ tmState' = "committed"
 
 SndAbort(rm) ==

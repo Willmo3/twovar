@@ -1,11 +1,11 @@
---------------------------- MODULE T2 ---------------------------
+--------------------------- MODULE E1 ---------------------------
 EXTENDS Naturals, Sequences, Integers
 
 VARIABLES tmState, tmPrepared
 
 vars == <<tmState,tmPrepared>>
 
-RMs == {"rm1","rm2","rm3"}
+RMs == {"rm1","rm2"}
 
 Message == (([type : {"Prepared"},theRM : RMs] \cup [type : {"Commit"},theRM : RMs]) \cup [type : {"Abort"},theRM : RMs])
 

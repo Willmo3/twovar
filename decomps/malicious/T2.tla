@@ -19,7 +19,7 @@ RcvPrepare(rm) ==
 /\ UNCHANGED <<tmState>>
 
 SndCommit(rm) ==
-/\ (tmState \in {"init","commmitted"})
+/\ (tmState \in {"init","committed"})
 /\ tmPrepared = RMs
 /\ tmState' = "committed"
 /\ UNCHANGED <<tmPrepared>>
