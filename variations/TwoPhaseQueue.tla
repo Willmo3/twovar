@@ -45,7 +45,7 @@ RcvPrepare(rm) ==
 SndCommit(rm) ==
   /\ tmState \in {"init", "committed"}
   /\ tmPrepared = RMs
-] /\ msgs' = Append(msgs, [type |-> "Commit", theRM |-> rm])
+  /\ msgs' = Append(msgs, [type |-> "Commit", theRM |-> rm])
   /\ tmState' = "committed"
   /\ UNCHANGED <<tmPrepared, rmState>>
 
@@ -58,7 +58,7 @@ RcvCommit(rm) ==
 
 SndAbort(rm) ==
   /\ tmState \in {"init", "aborted"}
-] /\ tmState' = "aborted"
+  /\ tmState' = "aborted"
   /\ msgs' = Append(msgs, [type |-> "Abort", theRM |-> rm])
   /\ UNCHANGED <<tmPrepared, rmState>>
 
