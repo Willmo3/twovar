@@ -7,7 +7,7 @@ VARIABLES msgs, rmState, tmState, tmPrepared
 
 vars == <<msgs, rmState, tmState, tmPrepared>>
 
-RMs == {"rm1", "rm2"}
+RMs == {"rm1", "rm2", "rm3"}
 
 Message ==
   [type : {"Prepared"}, theRM : RMs]  
